@@ -1,0 +1,259 @@
+
+ 
+b) Time Complexity Analysis
+toggle(): O(n log n) -  Sifting down each element takes O(log n), and there are n/2 elements to sift down.
+remove(e): O(log n) - log of n represents the length of the heap 
+replaceValue(e, v): O(1) - Only change the value, which takes constant time.
+
+
+
+        
+        Algorithm SPQ<V, K>
+
+    Entry<V, K>[] a
+    int nextEntry <-- 0
+    byte state
+    Comparator comparator
+
+    Function SPQ(comparator)
+        Input: comparator (Comparator)
+
+        a <-- new Array of Entry with size 1
+        this.comparator <-- comparator
+        this.state <-- 1
+
+    Function SPQ(comparator, capacity)
+        Input: comparator (Comparator), capacity (Integer)
+
+        a <-- new Array of Entry with size capacity
+        this.comparator <-- comparator
+        this.state <-- 1
+
+    Function SPQ(comparator, state)
+        Input: comparator (Comparator), state (Byte)
+
+        a <-- new Array of Entry with size 1
+        this.comparator <-- comparator
+        this.state <-- state
+
+    Function SPQ(comparator, capacity, state)
+        Input: comparator (Comparator), capacity (Integer), state (Byte)
+
+        a <-- new Array of Entry with size capacity
+        this.comparator <-- comparator
+        this.state <-- state
+
+    Function getSize()
+        Output: Integer
+
+        return nextEntry
+
+     Function expand()
+
+        Print "expanded"
+        newPQ <-- new Array of Entry with size a.length * 2
+
+        For i <-- 0 to getSize() - 1 do
+            newPQ[i] <-- a[i]
+
+        a <-- newPQ
+
+     Function parent(position)
+        Input: position (Integer)
+        Output: Integer
+
+        return (position % 2 == 0) ? (position - 2) / 2 : (position - 1) / 2
+
+     Function leftChild(position)
+        Input: position (Integer)
+        Output: Integer
+
+        return position * 2 + 1
+
+     Function rightChild(position)
+        Input: position (Integer)
+        Output: Integer
+
+        return position * 2 + 2
+
+     Function swap(i, j)
+        Input: i (Integer), j (Integer)
+
+        temp <-- a[i]
+        a[i] <-- a[j]
+        a[j] <-- temp
+
+     Function upHeap(position)
+        Input: position (Integer)
+
+        While position != 0 and comparator.compare(a[parent(position)].getKey(), a[position].getKey()) * state < 0 do
+            swap(position, parent(position))
+            position <-- parent(position)
+
+     Function downHeap(position)
+        Input: position (Integer)
+
+        While leftChild(position) < a.length and leftChild(position) < nextEntry do
+            downHeapPosition <-- 0
+
+            If comparator.compare(a[position].getKey(), a[leftChild(position)].getKey()) * state < 0 then
+                downHeapPosition <-- leftChild(position)
+
+            If rightChild(position) < a.length and rightChild(position) < nextEntry and comparator.compare(a[position].getKey(), a[rightChild(position)].getKey()) * state < 0 then
+                If downHeapPosition == 0 then
+                    downHeapPosition <-- rightChild(position)
+                Else If comparator.compare(a[downHeapPosition].getKey(), a[rightChild(position)].getKey()) * state < 0 then
+                    downHeapPosition <-- rightChild(position)
+
+            If downHeapPosition != 0 then
+                swap(position, downHeapPosition)
+                position <-- downHeapPosition
+            Else
+                break
+
+    Function insert(value, key)
+        Input: value (V), key (K)
+
+        If nextEntry == a.length then
+            expand()
+
+        a[nextEntry] <-- new Entry<V, K>(value, key)
+        upHeap(nextEntry)
+        nextEntry <-- nextEntry + 1
+
+    Function toggle()
+
+        state <-- state * -1
+
+        For i <-- (nextEntry / 2) - 1 to 0 do
+            downHeap(i)
+
+    Function replaceKey(entry, key)
+        Input: entry (Entry<V, K>), key (K)
+        Output: K
+
+        returnEntry <-- null
+
+        For i <-- 0 to nextEntry - 1 do
+            If a[i] == entry then
+                returnEntry <-- new Entry<V, K>(entry)
+                a[i].setKey(key)
+
+                keyDifference <-- comparator.compare(returnEntry.getKey(), key) * state
+
+                If keyDifference < 0 then
+                    upHeap(i)
+                Else If keyDifference > 0 then
+                    downHeap(i)
+
+                break
+
+        return (returnEntry != null) ? returnEntry.getKey() : null
+
+    Function replaceValue(entry, value)
+        Input: entry (Entry<V, K>), value (V)
+        Output: V
+
+        returnEntry <-- null
+
+        For i <-- 0 to nextEntry - 1 do
+            If a[i] == entry then
+                returnEntry <-- new Entry<V, K>(entry)
+                a[i].setValue(value)
+
+                break
+
+        return (returnEntry != null) ? returnEntry.getValue() : null
+
+    Function remove(entry)
+        Input: entry (Entry<V, K>)
+        Output: Entry<V, K>
+
+        returnEntry <-- null
+
+        For i <-- 0 to nextEntry - 1 do
+            If a[i] == entry then
+                returnEntry <-- new Entry<V, K>(entry)
+                a[i] <-- a[nextEntry - 1]
+                downHeap(i)
+                nextEntry <-- nextEntry - 1
+
+                break
+
+        return (returnEntry != null) ? returnEntry : null
+
+    Function removeTop()
+        Output: Entry<V, K>
+
+        return remove(top())
+
+    Function top()
+        Output: Entry<V, K>
+
+        return a[0]
+
+    Function isEmpty()
+        Output: Boolean
+
+        return (nextEntry == 0) ? true : false
+
+    Function state()
+        Output: String
+
+        return (state > 0) ? "max" : "min"
+        
+        
+**Algorithm NumericalValue
+
+    Function compare(x, y)
+        Input: x (Integer), y (Integer)
+        Output: Integer
+
+        return x.intValue() - y.intValue()
+        
+      
+      
+      
+**Algorithm Entry<V, K>
+
+    V value
+    K key
+
+    Function Entry(value, key)
+        Input: value (V), key (K)
+
+        value <-- value
+        key <-- key
+
+    Function Entry(entry)
+        Input: entry (Entry<V, K>)
+
+        key <-- entry.getKey()
+        value <-- entry.getValue()
+
+    Function getValue()
+        Output: V
+
+        return value
+
+    Function getKey()
+        Output: K
+
+        return key
+
+    Function setKey(key)
+        Input: key (K)
+
+        key <-- key
+
+    Function setValue(value)
+        Input: value (V)
+
+        value <-- value
+        
+        
+        
+        
+        
+        
+        
